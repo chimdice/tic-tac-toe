@@ -135,18 +135,23 @@ function playGame(player1, player2) {
         };
     };
 
-    const squares = document.querySelectorAll(".square");
+    const squares = document.querySelectorAll("#square");
 
     squares.forEach((square) => {
         square.addEventListener("click", () => {
-            if (turn) {
-                console.log(player1.marker);
-            } else {
-                console.log(player2.marker);
+            if (square.textContent.length == 0) {
+                if (turn) {
+                    let rowcol = square.className.split("");
+                    square.textContent = player1.marker;
+                    player1.choosePosition(rowcol[0], rowcol[1])
+                } else {
+                    let rowcol = square.className.split("");
+                    square.textContent = player2.marker;
+                    player2.choosePosition(rowcol[0], rowcol[1])
+                };
+                
+                turn = switchTurn(turn);
             };
-            
-            turn = switchTurn(turn);
-            console.log(turn)
         });
     });
 
