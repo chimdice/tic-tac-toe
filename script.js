@@ -10,6 +10,15 @@ function gameBoard () {
 
 function player (name, marker) {
     const {board} =  gameBoard();
+    let numTurns = 0;
+    const addTurn = () => {
+        numTurns++;
+    };
+
+    const displayTurns = () => {
+        return numTurns;
+    };
+
     const choosePosition = (row, column) => {
         board[row][column] = marker;
         console.log(board);
@@ -110,13 +119,44 @@ function player (name, marker) {
         
     };
 
-    return {name, marker, choosePosition};
+    return {name, marker, addTurn, displayTurns, choosePosition};
+};
+
+function playGame(player1, player2) {
+    
+    let turn = true;
+    let gameContinue = true;
+
+    function switchTurn (turn) {
+        if (turn) {
+            return false;
+        } else {
+            return true
+        };
+    };
+
+    const squares = document.querySelectorAll(".square");
+
+    squares.forEach((square) => {
+        square.addEventListener("click", () => {
+            if (turn) {
+                console.log(player1.marker);
+            } else {
+                console.log(player2.marker);
+            };
+            
+            turn = switchTurn(turn);
+            console.log(turn)
+        });
+    });
+
+    
 };
 
 
-let me = player("joe", "o");
-let player2 = player("shoe", "x")
-console.log(me);
-me.choosePosition(0,0);
-me.choosePosition(2,2);
-me.choosePosition(1,1);
+/*Eventual put everything in function*/
+
+const player1 = player("joe", "o");
+const player2 = player("shoe", "x")
+
+playGame(player1, player2);

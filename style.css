@@ -1,0 +1,20 @@
+:root {
+    --gray: rgb(198, 213, 194);
+}
+
+body {
+    box-sizing: border-box;
+}
+
+#play-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    width: 50svw;
+    height: 50svh;
+}
+
+.square {
+    background-color: var(--gray);
+    border: 1px solid black;
+}
