@@ -20,6 +20,9 @@ function player (name, marker) {
     };
 
     const choosePosition = (row, column) => {
+        row = Number(row);
+        column = Number(column);
+
         board[row][column] = marker;
         console.log(board);
         let win = false;
@@ -48,7 +51,7 @@ function player (name, marker) {
         const checkDiagonalVictory = () => {
             let combined = row + column;
     
-    
+            console.log(combined);
             if (combined%2 == 0) {
     
                 /*check left diagonal*/
@@ -66,7 +69,7 @@ function player (name, marker) {
                         numMarkerRight++;
                     };
                 };
-    
+                
                 if (row == 1 && column == 1) {
                     if (numMarkerLeft == 3 || numMarkerRight == 3) {
                         return true
@@ -99,7 +102,7 @@ function player (name, marker) {
         
     };
 
-    return {name, marker, addTurn, displayTurns, choosePosition};
+    return {name, marker, board, addTurn, displayTurns, choosePosition};
 };
 
 function playGame(player1, player2) {
@@ -119,10 +122,11 @@ function playGame(player1, player2) {
     function checkWin (gameWin, player) {
         if (gameWin) {
             message.textContent = `${player.name} won! Please press reset to play again.`;
+        
         } else if (turns == 9) {
             message.textContent = "Game ends in a draw. Please press reset to play again.";
             gameWin = true;
-        }
+        };
     };
 
     const squares = document.querySelectorAll("#square");
@@ -147,6 +151,22 @@ function playGame(player1, player2) {
                         checkWin(gameWin, player2);
                     };
                     
+                    if (gameWin) {
+                        player1.board = [
+                            [0,0,0],
+                            [0,0,0],
+                            [0,0,0]
+                        ];
+                        console.log(player1.board)
+
+                        player2.board = [
+                            [0,0,0],
+                            [0,0,0],
+                            [0,0,0]
+                        ];
+                        console.log(player2.board)
+                    };
+
                     turn = switchTurn(turn);
                 }; 
             };
@@ -158,23 +178,29 @@ function playGame(player1, player2) {
 const startBtn = document.querySelector("button[type=start]");
 const resetBtn = document.querySelector("button[type=reset]");
 const message = document.querySelector("#results-screen");
+let gameOff = true;
 
 startBtn.addEventListener("click", (event) => {
-    message.textContent = "Game currently in session.";
-    const player1Name = document.querySelector("#player1");
-    const player2Name = document.querySelector("#player2");
+    if (gameOff) {
+        message.textContent = "Game currently in session.";
+        const player1Name = document.querySelector("#player1");
+        const player2Name = document.querySelector("#player2");
+        gameOff = false;
 
-    const player1 = player(player1Name.value, "o");
-    const player2 = player(player2Name.value, "x");
+        const player1 = player(player1Name.value, "o");
+        const player2 = player(player2Name.value, "x");
 
-    player1Name.value = "";
-    player2Name.value = "";
+        player1Name.value = "";
+        player2Name.value = "";
 
-    playGame(player1, player2);
-    event.preventDefault();
+        playGame(player1, player2);
+
+        event.preventDefault();
+    };
 })
 
 resetBtn.addEventListener("click", (event) => {
+    gameOff = true;
     const squares = document.querySelectorAll("#square");
 
     const player1Name = document.querySelector("#player1");
