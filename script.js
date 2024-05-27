@@ -86,22 +86,6 @@ function player (name, marker) {
             return false
         };
     
-        const checkDraw = () => {
-            let fullrows = 0
-    
-            for (i=0;i<3;i++) {
-                if (! board[i].includes(0)) {
-                    fullrows++;
-                };
-            };
-    
-            if (fullrows == 3) {
-                return true;
-            } else {
-                return false;
-            };
-        };
-    
         
         if (checkRowVictory()) {
             win = true;
@@ -109,13 +93,9 @@ function player (name, marker) {
             win = true;
         } else if (checkDiagonalVictory()) {
             win = true
-        } else if (checkDraw()) {
-            console.log("game ends as draw")
-        }
+        } 
 
-        if (win) {
-            console.log(name +" won the game")
-        }
+        return win
         
     };
 
@@ -125,7 +105,8 @@ function player (name, marker) {
 function playGame(player1, player2) {
     
     let turn = true;
-    let gameContinue = true;
+    let gameWin = false;
+    let turns = 0
 
     function switchTurn (turn) {
         if (turn) {
@@ -135,33 +116,78 @@ function playGame(player1, player2) {
         };
     };
 
+    function checkWin (gameWin, player) {
+        if (gameWin) {
+            message.textContent = `${player.name} won! Please press reset to play again.`;
+        } else if (turns == 9) {
+            message.textContent = "Game ends in a draw. Please press reset to play again.";
+            gameWin = true;
+        }
+    };
+
     const squares = document.querySelectorAll("#square");
 
+    
     squares.forEach((square) => {
         square.addEventListener("click", () => {
-            if (square.textContent.length == 0) {
-                if (turn) {
-                    let rowcol = square.className.split("");
-                    square.textContent = player1.marker;
-                    player1.choosePosition(rowcol[0], rowcol[1])
-                } else {
-                    let rowcol = square.className.split("");
-                    square.textContent = player2.marker;
-                    player2.choosePosition(rowcol[0], rowcol[1])
-                };
-                
-                turn = switchTurn(turn);
+            square.setAttribute("style", "font-size:50px; display:flex; justify-content:center; align-items:center")
+            if (! gameWin) {
+               if (square.textContent.length == 0) {
+                    if (turn) {
+                        let rowcol = square.className.split("");
+                        square.textContent = player1.marker;
+                        gameWin = player1.choosePosition(rowcol[0], rowcol[1]);
+                        turns++
+                        checkWin(gameWin, player1);
+                    } else {
+                        let rowcol = square.className.split("");
+                        square.textContent = player2.marker;
+                        gameWin = player2.choosePosition(rowcol[0], rowcol[1]);
+                        turns++
+                        checkWin(gameWin, player2);
+                    };
+                    
+                    turn = switchTurn(turn);
+                }; 
             };
+            
         });
-    });
-
-    
+    });   
 };
 
+const startBtn = document.querySelector("button[type=start]");
+const resetBtn = document.querySelector("button[type=reset]");
+const message = document.querySelector("#results-screen");
 
-/*Eventual put everything in function*/
+startBtn.addEventListener("click", (event) => {
+    message.textContent = "Game currently in session.";
+    const player1Name = document.querySelector("#player1");
+    const player2Name = document.querySelector("#player2");
 
-const player1 = player("joe", "o");
-const player2 = player("shoe", "x")
+    const player1 = player(player1Name.value, "o");
+    const player2 = player(player2Name.value, "x");
 
-playGame(player1, player2);
+    player1Name.value = "";
+    player2Name.value = "";
+
+    playGame(player1, player2);
+    event.preventDefault();
+})
+
+resetBtn.addEventListener("click", (event) => {
+    const squares = document.querySelectorAll("#square");
+
+    const player1Name = document.querySelector("#player1");
+    player1Name.value = "";
+
+    const player2Name = document.querySelector("#player2");
+    player2Name.value = "";
+
+    squares.forEach((square) => {
+        square.textContent = ""
+    });
+
+    message.textContent = "Enter names to start playing.";
+
+    event.preventDefault();
+});

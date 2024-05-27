@@ -7,6 +7,7 @@
         <title>tic tac toe</title>
     </head>
     <body>
+        <h1>Let's play Tic-Tac-Toe</h1>
         <div id="play-grid">
             <div id="square" class="00"></div>
             <div id="square" class="01"></div>
@@ -18,5 +19,20 @@
             <div id="square" class="21"></div>
             <div id="square" class="22"></div>
         </div>
+        <div id="results-screen">
+            Enter names to start playing.
+        </div>
+        <form>
+            <div class="name-iput">
+                <label for="player1"> Player 1, please input your name: </label>
+                <input type="text" id="player1" name="player1" required>
+            </div>
+            <div class="name-iput">
+                <label for="player2"> Player 2, please input your name: </label>
+                <input type="text" id="player2" name="player2" required>
+            </div>
+            <button type="start">Start Game</button>
+            <button type="reset">Reset Gane</button>
+        </form>
     </body>
 </html>

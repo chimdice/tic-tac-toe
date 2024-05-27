@@ -4,18 +4,33 @@
 
 body {
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100svh;
+    margin: 0px;
+    gap: 20px
 }
 
 #play-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    width: 50svw;
-    height: 50svh;
+    grid-template-columns: repeat(3, minmax(20px,100px));
+    grid-template-rows: repeat(3, minmax(20px,100px));
 }
 
 #square {
     background-color: var(--gray);
     border: 1px solid black;
     text-align: center;
+}
+
+#results-screen {
+    width:400px;
+    height: 50px;
+    border: 1px solid black;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 50px;
+    font-size: 20px;
 }
