@@ -1,15 +1,14 @@
-function gameBoard () {
-    let board = [
-        [0,0,0],
-        [0,0,0],
-        [0,0,0]
-    ];
+function gameBoardFeature () {
 
-    const choosePosition = (row, column, markerIn) => {
+    const choosePosition = (row, column, markerIn, board) => {
         row = Number(row);
         column = Number(column);
 
         board[row][column] = markerIn;
+
+    };
+
+    const checkGameOver = (row, column, markerIn, board) => {
         let win = false;
 
         const checkRowVictory = () => {
@@ -86,7 +85,7 @@ function gameBoard () {
         
     };
 
-    return {board, choosePosition};
+    return {choosePosition, checkGameOver};
 };
 
 
@@ -94,14 +93,21 @@ function player (name, marker) {
     return {name, marker};
 };
 
-function playGame(player1, player2, board, choosePosition) {
+function playGame(player1, player2) {
 
     let turn = true;
     let gameWin = false;
     let turns = 0
-    const resetBtn = document.querySelector("button[type=reset]");
-    const message = document.querySelector("#results-screen");
 
+    const message = document.querySelector("#results-screen");
+    const squares = document.querySelectorAll("#square");
+    const {choosePosition, checkGameOver} =  gameBoardFeature();
+
+    let board = [
+        [0,0,0],
+        [0,0,0],
+        [0,0,0]
+    ];
 
     function switchTurn (turn) {
         if (turn) {
@@ -114,64 +120,34 @@ function playGame(player1, player2, board, choosePosition) {
     function checkWin (gameWin, player) {
         if (gameWin) {
             message.textContent = `${player.name} won! Please press reset to play again.`;
-            board = [
-                [0,0,0],
-                [0,0,0],
-                [0,0,0]
-            ];
 
         } else if (turns == 9) {
             message.textContent = "Game ends in a draw. Please press reset to play again.";
             gameWin = true;
-            board = [
-                [0,0,0],
-                [0,0,0],
-                [0,0,0]
-            ];
 
-            turn = 0;
+            turns = 0;
         };
     };
-
-    const squares = document.querySelectorAll("#square");
-
-    resetBtn.addEventListener("click", (event) => {
-        gameOff = true;
-
-        board = [
-            [0,0,0],
-            [0,0,0],
-            [0,0,0]
-        ];
-
-        squares.forEach((square) => {
-            square.textContent = ""
-        });
-
-        player1Name.value = "";
-        player2Name.value = "";
-    
-        message.textContent = "Enter names to start playing.";
-    
-        event.preventDefault();
-    });
 
     squares.forEach((square) => {
         square.addEventListener("click", () => {
             square.setAttribute("style", "font-size:50px; display:flex; justify-content:center; align-items:center")
+            console.log(gameWin)
             if (! gameWin) {
                if (square.textContent.length == 0) {
                     if (turn) {
                         let rowcol = square.className.split("");
                         square.textContent = player1.marker;
-                        gameWin = choosePosition(rowcol[0], rowcol[1], player1.marker);
+                        choosePosition(rowcol[0], rowcol[1], player1.marker, board);
+                        gameWin = checkGameOver(rowcol[0], rowcol[1], player1.marker, board);
                         turns++
                         checkWin(gameWin, player1);
 
                     } else {
                         let rowcol = square.className.split("");
                         square.textContent = player2.marker;
-                        gameWin = choosePosition(rowcol[0], rowcol[1], player2.marker);
+                        choosePosition(rowcol[0], rowcol[1], player2.marker, board);
+                        gameWin = checkGameOver(rowcol[0], rowcol[1], player2.marker, board);
                         turns++
                         checkWin(gameWin, player2);
 
@@ -182,35 +158,65 @@ function playGame(player1, player2, board, choosePosition) {
             };
             
         });
-    });   
+    });
+
+    const resetBtn = document.querySelector("button[type=reset]");
+    resetBtn.addEventListener("click", (event) => {
+
+        squares.forEach((square) => {
+            square.textContent = ""
+        });
+        
+        for (i=0;i<3;i++) {
+            for (j=0;j<3;j++) {
+                board[i][j] = 0
+            };
+        };
+
+        turns = 0;
+
+        event.preventDefault();
+    });
 };
 
 function manageGame() {
     const startBtn = document.querySelector("button[type=submit]");
     const message = document.querySelector("#results-screen");
-    let {board, choosePosition} =  gameBoard();
+    const player1Name = document.querySelector("#player1");
+    const player2Name = document.querySelector("#player2");
+    const resetBtn = document.querySelector("button[type=reset]");
 
     let gameOff = true;
 
     startBtn.addEventListener("click", (event) => {
-        const player1Name = document.querySelector("#player1");
-        const player2Name = document.querySelector("#player2");
-        if ((player1Name.value.length > 0) && (player2Name.value.length > 0)) {
-            const player1 = player(player1Name.value, "o");
-            const player2 = player(player2Name.value, "x");
+        if (gameOff) {
+            if ((player1Name.value.length > 0) && (player2Name.value.length > 0)) {
+                const player1 = player(player1Name.value, "o");
+                const player2 = player(player2Name.value, "x");
 
-            if (gameOff) {
-                message.textContent = "Game currently in session.";
-                gameOff = false;
-        
-                playGame(player1, player2, board, choosePosition);
-        
-                event.preventDefault();
+                if (gameOff) {
+                    message.textContent = "Game currently in session.";
+                    gameOff = false;
+            
+                    playGame(player1, player2);
+
+                    event.preventDefault();
+                };
+            } else {
+                alert("Please input a player(s) name!");
             };
-        } else {
-            alert("Please input a player(s) name!");
-        }
-        
+        };
+
+        event.preventDefault();
+
+    });
+
+    resetBtn.addEventListener("click", (event) => {
+
+        message.textContent = "Enter names to start playing.";
+        gameOff = true;
+    
+        event.preventDefault();
     });
 
 };
